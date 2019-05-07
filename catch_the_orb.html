@@ -9,118 +9,13 @@
     <canvas id="canvas">
       
     </canvas>
-    <script type="text/javascript" charset="utf-8">
-      var canvas = document.getElementById('canvas')
-      var c = canvas.getContext('2d')
-     
-      canvas.width = 512
-      canvas.height = 512
 
-
-      /*
-       * Tools
-       */
-
-      var Tools = {
-        r: function(n){
-          if(n){
-            return Math.floor(Math.random() * n)
-          }else{
-            return Math.floor(Math.random() * 255)
-          }
-        },
-        getRandColor: function(){
-          return "rgba(" + this.r() +"," + this.r() + "," + this.r()+", 1)"
-        },
-      }
-
-      /*
-       * End Tools
-       */
-
-      /*
-       * Key Handler
-       */
-
-      var KeyHandler = {
-        init: function (){
-          window.addEventListener('keydown', event =>
-            KeyHandler.keyDown(event), false)
-          window.addEventListener('keyup', event =>
-            KeyHandler.keyUp(event), false)
-        },
-        pressed: [],
-        keyDown: function(e) {
-          console.log('Keydown:', e.keyCode, e)
-          this.pressed[e.keyCode] = true
-        },
-        keyUp: function(e) {
-          this.pressed[e.keyCode] = null 
-        },
-      }
-
-      KeyHandler.init()
-
-      /*
-       * End Key Handler
-       */
-
-      
-
-      /*
-       * Orb Entity
-       */
-
-      var Orb = {
-        x: Tools.r(canvas.width),
-        y: Tools.r(canvas.height),
-        vx: 4,
-        vy: 4,
-        size: 16,
-        color: Tools.getRandColor(),
-        dirTime: new Date().getTime(),
-        draw: function () {
-          c.fillStyle = this.color
-          c.fillRect(this.x, this.y, this.size, this.size) 
-        },
-        update: function () {
-          if(new Date().getTime() - this.dirTime > Tools.r(3000)){
-            this.vx = (Tools.r(this.size) - (this.size/2))
-            this.vy = (Tools.r(this.size) - (this.size/2))
-            this.dirTime = new Date().getTime()
-          }
-          this.x += this.vx 
-          this.y += this.vy
-          if(this.y <= 0) this.y = 0
-          if(this.x <= 0) this.x = 0
-          if(this.y + this.size >= canvas.height) this.y = (canvas.height - this.size)
-          if(this.x + this.size >= canvas.width) this.x = (canvas.width - this.size)
-         
-
-          this.draw()
-        },
-      }
-      
-      /*
-       * END Orb Entity
-       */
-
-
-
-
-      
-  
-      function loop() {
-        //console.time('loop')
-        c.fillStyle = "black"
-        c.fillRect(0, 0, canvas.width, canvas.height)
-
-        Orb.update()
-
-        requestAnimationFrame(loop)
-        //console.timeEnd('loop')
-      }
-      loop()
+    <script src="Tools.js" charset="utf-8"></script>
+    <script src="KeyHandler.js" charset="utf-8"></script>
+    <script src="Entities.js" charset="utf-8"></script>
+    <script src="Tile.js" charset="utf-8"></script>
+    <script src="Dungeon.js" charset="utf-8"></script>
+    <script src="catch_the_orb.js" type="text/javascript" charset="utf-8">
     </script>
   </body>
 </html>
