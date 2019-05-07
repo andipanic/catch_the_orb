@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Catch the Orb</title>
+  </head>
+  <body>
+    <canvas id="canvas">
+      
+    </canvas>
+    <script type="text/javascript" charset="utf-8">
+      var canvas = document.getElementById('canvas')
+      var c = canvas.getContext('2d')
+     
+      canvas.width = 512
+      canvas.height = 512
+
+      /*
+       * Key Handler
+       */
+      var KeyHandler = {
+        init: function (){
+          window.addEventListener('keydown', event =>
+            KeyHandler.keyDown(event), false)
+          window.addEventListener('keyup', event =>
+            KeyHandler.keyUp(event), false)
+        },
+        pressed: [],
+        keyDown: function(e) {
+          console.log('Keydown:', e.keyCode, e)
+          this.pressed[e.keyCode] = true
+        },
+        keyUp: function(e) {
+          this.pressed[e.keyCode] = null 
+        },
+      }
+
+      KeyHandler.init()
+
+      /*
+       * End Key Handler
+       */
+
+      
+  
+      function loop() {
+        c.fillStyle = "black"
+        c.fillRect(0, 0, canvas.width, canvas.height)
+
+        requestAnimationFrame(loop)
+      }
+      loop()
+    </script>
+  </body>
+</html>
