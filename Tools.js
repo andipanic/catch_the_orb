@@ -12,7 +12,11 @@ var Tools = {
              r2.y > r1.y + r1.size ||
              r2.y + r2.size < r1.y);
   },
-  getRandColor: function(){
-    return "rgba(" + this.r() +"," + this.r() + "," + this.r()+", 1)"
+  getRandColor: function(alpha){
+    this.alpha = alpha || 1
+    return "rgba(" + this.r() +"," + this.r() + "," + this.r()+", " + this.alpha + ")"
+  },
+  choose: function(items) {
+    return items[Math.floor(Math.random() * items.length)]
   },
 }

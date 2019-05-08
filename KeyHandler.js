@@ -1,4 +1,5 @@
 var KeyHandler = {
+  log: false,
   init: function() {
     window.addEventListener('keydown', event =>
       KeyHandler.keyDown(event), false);
@@ -7,7 +8,9 @@ var KeyHandler = {
   },
   pressed: [],
   keyDown: function(e) {
-    console.log("Keydown:", e.keyCode, e)
+    if(this.log){
+      console.log("Keydown:", e.keyCode, e)
+    }
     this.pressed[e.keyCode] = true;
   },
   keyUp: function(e) {
