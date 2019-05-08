@@ -44,7 +44,6 @@ Orb.prototype.update = function() {
   if(this.x + this.size >= canvas.width) this.x = (canvas.width - this.size)
   this.draw()
 }
-
 // End Orb
 
 

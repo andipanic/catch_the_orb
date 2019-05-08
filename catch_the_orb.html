@@ -4,18 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Catch the Orb</title>
+    <style type="text/css" media="screen">
+      body {
+        background-color: black;
+      }
+      .canvas {
+        display: block;
+        margin: auto auto;
+        border-radius: 7px;
+        border: 7px double white;
+      }
+    </style>
   </head>
   <body>
-    <canvas id="canvas">
-      
-    </canvas>
-
+    <canvas id="hud" class="canvas" width=512 height=75> </canvas>
+    <canvas id="canvas" class="canvas"></canvas>
     <script src="Tools.js" charset="utf-8"></script>
     <script src="KeyHandler.js" charset="utf-8"></script>
     <script src="Entities.js" charset="utf-8"></script>
     <script src="Tile.js" charset="utf-8"></script>
     <script src="Dungeon.js" charset="utf-8"></script>
-    <script src="catch_the_orb.js" type="text/javascript" charset="utf-8">
-    </script>
+    <script src="HUD.js" charset="utf-8"></script>
+    <script src="catch_the_orb.js" type="text/javascript" charset="utf-8"></script>
+      
   </body>
 </html>
