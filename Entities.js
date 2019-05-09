@@ -11,6 +11,9 @@ function Entity(x, y, size, color) {
   this.life = 1
   this.death = null
   this.decay = 3
+  this.kills = 0
+  this.lastHit = null
+  this.hitColor = 'white'
 }
 
 Entity.prototype.isAlive = function() {
@@ -34,6 +37,10 @@ Entity.prototype.dead = function(n=0) {
 Entity.prototype.draw = function () {
   c.fillStyle = this.color
   c.fillRect(this.x, this.y, this.size, this.size)
+  if(this.life > 0){
+    c.fillStyle = 'green'
+    c.fillRect(this.x, this.y - (this.size / 4), this.life, 2)
+  }
   if(this.viewBox) {
     var view = this.view()
     c.strokeStyle = this.color
@@ -41,10 +48,16 @@ Entity.prototype.draw = function () {
   }
 }
 
-Entity.prototype.update = function () {
-  if(this.isAlive()){
-    this.draw()
+Entity.prototype.hit = function() {
+  if(this.color != this.hitColor){
+    this.lastColor = this.color
+    this.color = this.hitColor
   }
+
+  this.wasHit = true
+}
+
+Entity.prototype.update = function () {
 }
 
 Entity.prototype.view = function () {
@@ -58,11 +71,10 @@ Entity.prototype.view = function () {
 
 
 // Orb subclass of Entity
-function Orb() {
-  Entity.call(this)
+function Orb(x, y, size, color) {
+  Entity.call(this, x, y, size, color)
   this.vx = 4
   this.vy = 4
-  this.color = Tools.getRandColor()
   this.dirTime = new Date().getTime()
 }
 
@@ -82,10 +94,10 @@ Orb.prototype.update = function() {
     if(this.x <= 0) this.x = 0
     if(this.y + this.size >= canvas.height) this.y = (canvas.height - this.size)
     if(this.x + this.size >= canvas.width) this.x = (canvas.width - this.size)
-    this.draw()
   }
-  if(!this.dead(this.decay)){
-    this.draw()
+  if(this.wasHit && new Date().getTime() - this.lastHit > 200) {
+    this.color = this.lastColor
+    this.wasHit = false
   }
 }
 // End Orb
@@ -93,11 +105,16 @@ Orb.prototype.update = function() {
 
 
 // Player subclass Entity
-function Player() {
+function Player(name) {
   Entity.call(this)
   this.vx = 4
   this.vy = 4
   this.color = "red"
+  this.floor = 0
+  this.name = name
+  this.life = 8
+  this.keys = {'left': 37, 'right': 39, 'up': 38, 'down': 40} // arrows
+  this.hitColor = Tools.getRandColor()
 }
 
 Player.prototype = Object.create(Entity.prototype)
@@ -106,19 +123,19 @@ Player.prototype.constructor = Player
 Player.prototype.update = function() {
   if(this.isAlive()){
     // Left
-    if (KeyHandler.pressed[37]) {
+    if (KeyHandler.pressed[this.keys.left]) {
       this.x -= this.vx;
     }
     // Up
-    if (KeyHandler.pressed[38]) {
+    if (KeyHandler.pressed[this.keys.up]) {
       this.y -= this.vy;
     }
     // Right
-    if (KeyHandler.pressed[39]) {
+    if (KeyHandler.pressed[this.keys.right]) {
       this.x += this.vx;
     }
     // Down
-    if (KeyHandler.pressed[40]) {
+    if (KeyHandler.pressed[this.keys.down]) {
       this.y += this.vy;
     }
 
@@ -135,11 +152,10 @@ Player.prototype.update = function() {
     if (this.y < 0) {
       this.y = 0
     }
-    this.draw()
-  }
-
-  if(!this.dead(this.decay)){
-    this.draw();
+    if(this.wasHit && new Date().getTime() - this.lastHit > 200){
+      this.color = this.lastColor
+      this.wasHit = false
+    }
   }
 }
 // End Player

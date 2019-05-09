@@ -19,7 +19,6 @@ Tile.prototype.draw = function () {
 }
 
 Tile.prototype.update = function () {
-  this.draw()
 }
 // End Tile
 
@@ -34,13 +33,9 @@ FallingTile.prototype = Object.create(Tile.prototype)
 FallingTile.prototype.constructor = FallingTile
 
 FallingTile.prototype.update = function () {
-  if(!this.triggered){
-    this.draw()
-  }
-  if(this.alpha > 0 && this.triggered){
+  if(this.triggered && this.alpha > 0){
     this.alpha -= .05
     this.color = Tools.getRandColor(this.alpha)
-    this.draw()
   }
 }
 // End FallingTile
@@ -94,14 +89,13 @@ ExplodingTile.prototype.draw = function() {
 }
 
 ExplodingTile.prototype.update = function() {
-  if (this.triggered && !this.finished) {
-    if(this.particles.length == 0){
-      for (var i = this.x; i < this.x + this.size; i += this.particle_size) {
-        for (var j = this.y; j < this.y + this.size; j += this.particle_size) {
-          this.particles.push(new Particle(i, j, this.particle_size, this.color, this.solid));
-        }
+  if (this.triggered && !this.particles.length) {
+    for (var i = this.x; i < this.x + this.size; i += this.particle_size) {
+      for (var j = this.y; j < this.y + this.size; j += this.particle_size) {
+        this.particles.push(new Particle(i, j, this.particle_size, Tools.getRandColor(), this.solid));
       }
     }
+  }else if(!this.finished){
     this.particles.forEach(part => {
       if(part.alpha > .1){
         part.update()
@@ -110,9 +104,11 @@ ExplodingTile.prototype.update = function() {
         this.finished = true
       }
     })
-    this.draw()
-  } else {
-    this.draw();
-  }
+  } 
+  if(!this.particles.length) {this.draw()}
 }
 // End ExplodingTile
+
+// DoorTile
+// End DoorTile
+

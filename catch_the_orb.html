@@ -10,15 +10,27 @@
       }
       .canvas {
         display: block;
-        margin: auto auto;
         border-radius: 7px;
         border: 7px double white;
+      }
+      #canvas {
+        float: left;
+      }
+      #screens {
+        display: block;
+        margin: auto auto;
       }
     </style>
   </head>
   <body>
+    <div id="screens">
+      
     <canvas id="hud" class="canvas" width=512 height=75> </canvas>
     <canvas id="canvas" class="canvas"></canvas>
+    <canvas id="canvas2" class="canvas" width=512 height=512>
+      
+    </canvas>
+    </div>
     <script src="Tools.js" charset="utf-8"></script>
     <script src="KeyHandler.js" charset="utf-8"></script>
     <script src="Entities.js" charset="utf-8"></script>
