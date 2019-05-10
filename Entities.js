@@ -115,10 +115,11 @@ Orb.prototype.update = function() {
 
 
 // ElevatorOrb
-function ElevatorOrb(x, y, size, color, direction){
+function ElevatorOrb(x, y, size, color, life){
   Orb.call(this, x, y, size, color)
-  this.direction = direction || 1
-  this.size = 16
+  this.direction = 1
+  this.life = life
+  this.maxLife = life
   this.divs = this.life
   this.div = this.size/this.divs
   this.particles = []

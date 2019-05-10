@@ -23,7 +23,7 @@ Level.prototype.draw = function(){
 // OrbLevel
 function OrbLevel(x, id) {
   Level.call(this, x, id)
-  this.orb = new ElevatorOrb(Tools.r(canvas.width), Tools.r(canvas.height), 16, Tools.getRandColor())
+  this.orb = new ElevatorOrb(Tools.r(canvas.width), Tools.r(canvas.height), Tools.r(16) + 16, Tools.getRandColor(), Tools.r(2) + 3)
   this.players = []
   this.complete = false
 }
