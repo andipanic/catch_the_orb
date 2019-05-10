@@ -107,10 +107,92 @@ Orb.prototype.update = function() {
     this.color = this.lastColor
     this.wasHit = false
   }
+  if(this.death){
+    this.draw()
+  }
 }
 // End Orb
 
 
+// ElevatorOrb
+function ElevatorOrb(x, y, size, color, direction){
+  Orb.call(this, x, y, size, color)
+  this.direction = direction || 1
+  this.size = 16
+  this.divs = this.life
+  this.div = this.size/this.divs
+  this.particles = []
+  this.particle_size = this.size / 2 
+  this.solid = false
+  this.triggered = false
+  this.particle_color = this.color
+  this.viewBox = true 
+}
+
+ElevatorOrb.prototype = Object.create(Orb.prototype)
+ElevatorOrb.prototype.constructor = ElevatorOrb
+
+ElevatorOrb.prototype.reset = function(){
+  this.particles = null
+  this.particles = []
+  for (var i = this.x; i < this.x + this.size; i += this.particle_size) {
+    for (var j = this.y; j < this.y + this.size; j += this.particle_size) {
+      console.log('hit')
+      this.particles.push(new Particle(i, j, this.particle_size, this.particle_color, this.solid));
+    }
+  }
+  this.finished = false
+  this.triggered = false
+}
+
+ElevatorOrb.prototype.drawParticles = function() {
+  if (!this.particles.length) {
+    this.reset()
+  }else if(this.triggered && !this.finished){
+    this.particles.forEach(part => {
+      if(part.alpha > .1){
+        part.update()
+        part.draw()
+      }else{
+        this.reset()
+      }
+    }, this)
+  } 
+  if(!this.particles.length) {this.draw()}
+}
+
+
+ElevatorOrb.prototype.draw = function() {
+  c.fillStyle = this.color
+  this.divs = this.life
+  this.size = this.div * this.divs
+  for (var i = 0; i < this.divs; i++){
+    for  (var j = 0; j < this.divs; j++){
+      if(j%2==0 && i%2==0 || i%2==1 && j%2==1)
+        c.fillRect(this.x + (i*this.div), this.y + (j*this.div), this.div, this.div)
+    }
+  }
+  if(this.life > 0){
+    c.fillStyle = 'green'
+    c.fillRect(this.x, this.y - (this.size / 4), (this.size / this.maxLife) * this.life, 2)
+  } 
+   if(this.viewBox) {
+    var view = this.view()
+    c.strokeStyle = this.color
+    c.strokeRect(view.x, view.y, view.size, view.size)
+
+  }
+  if(this.death){
+    this.size = this.div * this.maxLife
+    var view = this.view()
+    c.fillStyle = this.color
+    c.fillRect(view.x, view.y, view.size, view.size)
+    c.fillStyle = 'black'
+    c.fillRect(this.x, this.y, this.size, this.size)
+  }
+}
+
+// End ElevatorOrb
 
 // Player subclass Entity
 function Player(name) {

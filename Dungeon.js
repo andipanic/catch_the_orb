@@ -23,7 +23,7 @@ Level.prototype.draw = function(){
 // OrbLevel
 function OrbLevel(x, id) {
   Level.call(this, x, id)
-  this.orb = new Orb(Tools.r(canvas.width), Tools.r(canvas.height), 16, Tools.getRandColor())
+  this.orb = new ElevatorOrb(Tools.r(canvas.width), Tools.r(canvas.height), 16, Tools.getRandColor())
   this.players = []
   this.complete = false
 }
@@ -50,6 +50,9 @@ OrbLevel.prototype.checkPlayers = function(){
 OrbLevel.prototype.draw = function(){
   this.lvl.forEach(tile=>tile.draw())
   this.orb.draw()
+  if(this.orb.death){
+    this.orb.drawParticles()
+  }
   this.players.forEach(player => {
     if(!player.dead(player.decay)){
       player.draw()
@@ -68,47 +71,48 @@ OrbLevel.prototype.update = function(){
     this.orb.dead = function(){} 
     this.startTime = new Date().getTime()
   }
-    if(this.hasPlayers()){
-      this.players.forEach(function(player){
-        if(this.orb.isAlive() && Tools.intersectRect(player, this.orb) && !player.wasHit){
-          // Combat
-          var h = Tools.choose([this.orb, player])
-          h.lastHit = new Date().getTime()
-          h.hit()
-          h.life -= 1
-          if(h.life == 0 && h == this.orb){
-            player.kills += 1
+  if(this.hasPlayers()){
+    this.players.forEach(function(player){
+      if(this.orb.isAlive() && Tools.intersectRect(player, this.orb) && !player.wasHit){
+        // Combat
+        var h = Tools.choose([this.orb, player])
+        h.lastHit = new Date().getTime()
+        h.hit()
+        h.life -= 1
+        if(h.life == 0 && h == this.orb){
+          player.kills += 1
 
-            player.floorTime = new Date().getTime()
-            this.clearTime = (new Date().getTime() - this.startTime)/1000
-            this.complete = true
-            this.completedBy = player.name
-          }else if(player.life == 0){
-            this.orb.kills += 1
-            this.orb.status = 'Attacking'
-          }
-          // End Combat
-        }else if(this.orb.death && Tools.intersectRect(player, this.orb)){
-          this.orb.status = 'Dead'
-
-          if(new Date().getTime() - player.floorTime > 200){ 
-            if(player.floor >= this.x - 1){
-              player.floor = 0
-            }else{
-              player.floor += 1
-              if(player.life < player.regen){
-                player.life += 1
-              }
-            }
-            player.floorTime = new Date().getTime()
-            this.checkPlayers()
-          }
-        }
-        if(this.complete && !player.floorTime){
           player.floorTime = new Date().getTime()
+          this.clearTime = (new Date().getTime() - this.startTime)/1000
+          this.complete = true
+          this.completedBy = player.name
+        }else if(player.life == 0){
+          this.orb.kills += 1
+          this.orb.status = 'Attacking'
         }
-      }, this)
-    }
+        // End Combat
+      }else if(this.orb.death && Tools.intersectRect(player, this.orb)){
+        this.orb.status = 'Dead'
+        this.orb.triggered = true
+
+        if(new Date().getTime() - player.floorTime > 200){ 
+          if(player.floor >= this.x - 1){
+            player.floor = 0
+          }else{
+            player.floor += 1 
+            if(player.life < player.regen){
+              player.life += 1
+            }
+          }
+          player.floorTime = new Date().getTime()
+          this.checkPlayers()
+        }
+      }
+      if(this.complete && !player.floorTime){
+        player.floorTime = new Date().getTime()
+      }
+    }, this)
+  }
   this.orb.update()
 }
 // End OrbLevel
