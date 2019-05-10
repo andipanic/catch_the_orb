@@ -7,6 +7,7 @@ function HUD(id){
   this.background = "rgba(0, 0, 255, .065)"
   this.title = ''
   this.normal = "white"
+  this.center = this.canvas.width / 2
   this.clear = function (){
     this.c.fillStyle = this.background
     this.c.fillRect(0, 0, this.canvas.width, this.canvas.height)
@@ -15,7 +16,13 @@ function HUD(id){
     this.c.font = "48px monospace"
     this.c.fillStyle = this.normal
     this.c.textAlign = 'center'
-    this.c.fillText(this.title, (this.canvas.width / 2), 58)
+    this.c.fillText(this.title, this.center, 58)
+  }
+  this.message = function(msg, height){
+    this.c.fillStyle = this.normal
+    this.c.font = "16px monospace"
+    this.c.textAlign = 'center'
+    this.c.fillText(msg, this.center, height)
   }
 }
 

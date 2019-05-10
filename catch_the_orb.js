@@ -35,9 +35,9 @@ player1.viewBox = false
 var player2 = new Player('Steph')
 player2.x = Tools.r(canvas.width)
 player2.y = Tools.r(canvas.height)
-player2.color = Tools.getRandColor()
+player2.color = "blue"
 player2.viewBox = false
-player1.keys = {'left': 65, 'up': 87, 'right': 68, 'down': 83}  // wasd
+player2.keys = {'left': 65, 'up': 87, 'right': 68, 'down': 83}  // wasd
 
 var d = new Dungeon(8, [player1, player2])
 d[player1.floor].players.push(player1)
@@ -90,11 +90,19 @@ function loop() {
 loop()
 
 var hud = new HUD('hud')
+var hud2 = new HUD('hud2')
 hud.title = "Catch the Orb!"
-
+hud2.title = "Catch the Orb!"
+hud2.background = player2.color
+hud.background = player1.color
 function hudloop(){
   hud.clear()
-  hud.displayTitle()
+  hud.message(player1.name, 16)
+  hud.message('Life: ' + player1.life + ', Kills: ' + player1.kills, 38)
+
+  hud2.clear()
+  hud2.message(player2.name, 16)
+  hud2.message('Life: ' + player2.life + ', Kills: ' + player2.kills, 38)
 
   requestAnimationFrame(hudloop)
 }

@@ -22,6 +22,7 @@ Entity.prototype.isAlive = function() {
   }else{
     if(!this.death){
       this.death = new Date()
+      this.life = 'Dead'
     }
     return false
   }

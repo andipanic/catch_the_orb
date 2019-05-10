@@ -9,23 +9,29 @@
         background-color: black;
       }
       .canvas {
-        display: block;
         border-radius: 7px;
         border: 7px double white;
       }
       #canvas {
-        float: left;
+        float: right;
       }
-      #screens {
+
+      #hud {
+        float: right;
+      }
+      #screens canvas {
         display: block;
-        margin: auto auto;
       }
+      
     </style>
   </head>
   <body>
     <div id="screens">
       
+    
+
     <canvas id="hud" class="canvas" width=512 height=75> </canvas>
+    <canvas id="hud2" class="canvas" width=512 height=75> </canvas>
     <canvas id="canvas" class="canvas"></canvas>
     <canvas id="canvas2" class="canvas" width=512 height=512>
       
