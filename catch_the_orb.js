@@ -46,7 +46,7 @@ d[player2.floor].players.push(player2)
 d.player2floor = player2.floor
 
 function loop() {
-  c.fillStyle = "rgba(0, 0, 0, .5)"
+  c.fillStyle = "rgba(0, 0, 0, .25)"
   c.fillRect(0, 0, canvas.width, canvas.height)
 
   if(d.player1floor != player1.floor){
@@ -70,7 +70,7 @@ function loop() {
 
 
   c = screen2
-  c.fillStyle = "rgba(0, 0, 0, .5)"
+  c.fillStyle = "rgba(0, 0, 0, .25)"
   c.fillRect(0, 0, canvas.width, canvas.height)
   if(d[player2.floor].hasPlayers() && player2.floor != player1.floor){
     d[player2.floor].update()
@@ -96,13 +96,40 @@ hud2.title = "Catch the Orb!"
 hud2.background = player2.color
 hud.background = player1.color
 function hudloop(){
+  orb1 = d[player1.floor].orb
+  hud.background = player1.color
   hud.clear()
-  hud.message(player1.name, 16)
-  hud.message('Life: ' + player1.life + ', Kills: ' + player1.kills, 38)
+  hud.message(player1.name, 20)
+  if(player1.isAlive()){
+    hud.message('Life: ' + player1.life + ', Kills: ' + player1.kills + ", Orb: " + orb1.status, 42)
+  }else{
+    hud.message('You have died on floor ' + (player1.floor + 1) + ' with ' + player1.kills + ' kills.', 42)
+  }
 
+  if(orb1.wasHit){
+    player1.status = "Attacking"
+  }
+  if(player1.wasHit){
+    player1.status = "Defending"
+  }
+  hud.message(player1.status, 64)
+
+  orb2 = d[player2.floor].orb
+  hud2.background = player2.color
   hud2.clear()
-  hud2.message(player2.name, 16)
-  hud2.message('Life: ' + player2.life + ', Kills: ' + player2.kills, 38)
+  hud2.message(player2.name, 20)
+  if(player2.isAlive()){
+    hud2.message('Life: ' + player2.life + ', Kills: ' + player2.kills + ", Orb: " + orb2.status, 42)
+  }else{
+    hud2.message('You have died on floor ' + (player2.floor+1) + ' with ' + player2.kills + ' kills.', 42)
+  }
+  if(d[player2.floor].orb.wasHit){
+    player2.status = "Attacking"
+  }
+  if(player2.wasHit){
+    player2.status = "Defending"
+  }
+  hud2.message(player2.status, 64)
 
   requestAnimationFrame(hudloop)
 }

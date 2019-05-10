@@ -14,6 +14,8 @@ function Entity(x, y, size, color) {
   this.kills = 0
   this.lastHit = null
   this.hitColor = 'white'
+  this.status = ''
+  this.maxLife = 1
 }
 
 Entity.prototype.isAlive = function() {
@@ -22,7 +24,7 @@ Entity.prototype.isAlive = function() {
   }else{
     if(!this.death){
       this.death = new Date()
-      this.life = 'Dead'
+      this.status = 'Dead'
     }
     return false
   }
@@ -40,7 +42,7 @@ Entity.prototype.draw = function () {
   c.fillRect(this.x, this.y, this.size, this.size)
   if(this.life > 0){
     c.fillStyle = 'green'
-    c.fillRect(this.x, this.y - (this.size / 4), this.life, 2)
+    c.fillRect(this.x, this.y - (this.size / 4), (this.size / this.maxLife) * this.life, 2)
   }
   if(this.viewBox) {
     var view = this.view()
@@ -76,7 +78,11 @@ function Orb(x, y, size, color) {
   Entity.call(this, x, y, size, color)
   this.vx = 4
   this.vy = 4
+  this.maxv = Tools.r(12) + 4 
   this.dirTime = new Date().getTime()
+  this.maxmove = Tools.r(5000) 
+  this.life = 3
+  this.maxLife = 3
 }
 
 Orb.prototype = Object.create(Entity.prototype)
@@ -84,9 +90,9 @@ Orb.prototype.constructor = Orb
 
 Orb.prototype.update = function() {
   if(this.isAlive()){
-    if(new Date().getTime() - this.dirTime > Tools.r(3000)){
-      this.vx = (Tools.r(this.size) - (this.size/2))
-      this.vy = (Tools.r(this.size) - (this.size/2))
+    if(new Date().getTime() - this.dirTime > Tools.r(this.maxmove)){
+      this.vx = (Tools.r(this.maxv) - (this.maxv/2))
+      this.vy = (Tools.r(this.maxv) - (this.maxv/2))
       this.dirTime = new Date().getTime()
     }
     this.x += this.vx 
@@ -95,6 +101,7 @@ Orb.prototype.update = function() {
     if(this.x <= 0) this.x = 0
     if(this.y + this.size >= canvas.height) this.y = (canvas.height - this.size)
     if(this.x + this.size >= canvas.width) this.x = (canvas.width - this.size)
+    this.status = 'Moving'
   }
   if(this.wasHit && new Date().getTime() - this.lastHit > 200) {
     this.color = this.lastColor
@@ -113,9 +120,11 @@ function Player(name) {
   this.color = "red"
   this.floor = 0
   this.name = name
-  this.life = 8
+  this.life = 16 
   this.keys = {'left': 37, 'right': 39, 'up': 38, 'down': 40} // arrows
   this.hitColor = Tools.getRandColor()
+  this.regen = 12
+  this.maxLife = 16
 }
 
 Player.prototype = Object.create(Entity.prototype)
@@ -126,18 +135,22 @@ Player.prototype.update = function() {
     // Left
     if (KeyHandler.pressed[this.keys.left]) {
       this.x -= this.vx;
+      this.status = 'Left'
     }
     // Up
     if (KeyHandler.pressed[this.keys.up]) {
       this.y -= this.vy;
+      this.status = 'Up'
     }
     // Right
     if (KeyHandler.pressed[this.keys.right]) {
       this.x += this.vx;
+      this.status = 'Right'
     }
     // Down
     if (KeyHandler.pressed[this.keys.down]) {
       this.y += this.vy;
+      this.status = 'Down'
     }
 
     // keep player in screen

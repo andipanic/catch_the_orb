@@ -53,6 +53,8 @@ OrbLevel.prototype.draw = function(){
   this.players.forEach(player => {
     if(!player.dead(player.decay)){
       player.draw()
+    }else{
+      player.status = 'Dead'
     }
   })
   c.font = "64px Georgia"
@@ -66,10 +68,9 @@ OrbLevel.prototype.update = function(){
     this.orb.dead = function(){} 
     this.startTime = new Date().getTime()
   }
-  this.lvl.forEach(function(tile) {
     if(this.hasPlayers()){
       this.players.forEach(function(player){
-        if(this.orb.isAlive() && Tools.intersectRect(player, this.orb)){
+        if(this.orb.isAlive() && Tools.intersectRect(player, this.orb) && !player.wasHit){
           // Combat
           var h = Tools.choose([this.orb, player])
           h.lastHit = new Date().getTime()
@@ -84,15 +85,20 @@ OrbLevel.prototype.update = function(){
             this.completedBy = player.name
           }else if(player.life == 0){
             this.orb.kills += 1
+            this.orb.status = 'Attacking'
           }
           // End Combat
-        }else if(Tools.intersectRect(player, this.orb)){
+        }else if(this.orb.death && Tools.intersectRect(player, this.orb)){
+          this.orb.status = 'Dead'
 
           if(new Date().getTime() - player.floorTime > 200){ 
             if(player.floor >= this.x - 1){
               player.floor = 0
             }else{
               player.floor += 1
+              if(player.life < player.regen){
+                player.life += 1
+              }
             }
             player.floorTime = new Date().getTime()
             this.checkPlayers()
@@ -103,67 +109,12 @@ OrbLevel.prototype.update = function(){
         }
       }, this)
     }
-  }, this)
   this.orb.update()
 }
 // End OrbLevel
 
 
-
-
-/*
-
-
-var Level = function (x, y, size) {
-  var lvl = [];
-  var x = x
-  var y = y || x
-  var size = size || Math.ceil(canvas.width / x)
-  function down(lvl) {
-    var n = Tools.r(lvl.length)
-    if(n == 0) { n+= 1}
-    lvl.isDown = n
-    lvl[n].isDown = true
-  }
-  function up(lvl) {
-    var u = Tools.r(lvl.length)
-    while(u == lvl.isDown) {
-      u = Tools.r(lvl.length)
-    }
-    lvl.isUp = u
-    lvl[u].isUp = true
-  }
-  for (var i = 0; i < canvas.width; i += size) {
-    for (var j = 0; j < canvas.height; j += size) {
-      lvl.push(new ExplodingTile(i, j, size, Tools.getRandColor(), false))
-    }
-  }
-
-  down(lvl)
-  up(lvl)
-
-  lvl.forEach((tile) => {
-    if(tile.isDown) {
-      lvl.hasDown = true
-      lvl.downTile = tile
-    }else if(tile.isUp) {
-      lvl.hasUp = true
-      lvl.upTile = tile
-    }else{
-      console.log('\tnormal tile')
-    }
-  })
-
-  if(lvl.hasDown && lvl.hasUp) {
-    console.log("\tHas both sets of stairs")
-  }else{
-    console.log("\tLevel has issues...")
-  }
-
-  return lvl
-}
-*/
-
+// Dungeon
 function Dungeon(lvls, players) {
   players = players
   d = []
@@ -172,4 +123,4 @@ function Dungeon(lvls, players) {
   }
   return d
 }
-
+// End Dungeon
