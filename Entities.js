@@ -3,8 +3,7 @@ function Entity(x, y, size, color) {
   this.x = x || 100
   this.y = y || 100
   this.size = size || 16
-  this.color = color || "red"
-  this.colors = [Tools.getRandColor()]
+  this.colors = [color] || [Tools.getRandColor()]
   this.viewx = this.x - this.size
   this.viewy = this.y - this.size
   this.views = this.size * 2
@@ -47,7 +46,7 @@ Entity.prototype.draw = function () {
   }
   if(this.viewBox) {
     var view = this.view()
-    c.strokeStyle = this.color
+    c.strokeStyle = this.colors[0]
     c.strokeRect(view.x, view.y, view.size, view.size)
   }
 }
@@ -105,7 +104,7 @@ Orb.prototype.update = function() {
     this.status = 'Moving'
   }
   if(this.wasHit && new Date().getTime() - this.lastHit > 200) {
-    this.color = this.lastColor
+    this.colors[0] = this.lastColor
     this.wasHit = false
   }
   if(this.death){
@@ -127,7 +126,7 @@ function ElevatorOrb(x, y, size, color, life){
   this.particle_size = this.size / 2 
   this.solid = false
   this.triggered = false
-  this.particle_color = this.color
+  this.particle_color = this.colors[0]
   this.viewBox = true 
 }
 
@@ -164,7 +163,7 @@ ElevatorOrb.prototype.drawParticles = function() {
 
 
 ElevatorOrb.prototype.draw = function() {
-  c.fillStyle = this.color
+  c.fillStyle = this.colors[0]
   this.divs = this.life
   this.size = this.div * this.divs
   for (var i = 0; i < this.divs; i++){
@@ -179,14 +178,14 @@ ElevatorOrb.prototype.draw = function() {
   } 
    if(this.viewBox) {
     var view = this.view()
-    c.strokeStyle = this.color
+    c.strokeStyle = this.colors[0]
     c.strokeRect(view.x, view.y, view.size, view.size)
 
   }
   if(this.death){
     this.size = this.div * this.maxLife
     var view = this.view()
-    c.fillStyle = this.color
+    c.fillStyle = this.colors[0]
     c.fillRect(view.x, view.y, view.size, view.size)
     c.fillStyle = 'black'
     c.fillRect(this.x, this.y, this.size, this.size)
@@ -200,7 +199,6 @@ function Player(name) {
   Entity.call(this)
   this.vx = 4
   this.vy = 4
-  this.color = "red"
   this.colors = [Tools.getRandColor(), 'rgba(255, 224, 189, 1)']
   this.floor = 0
   this.name = name
