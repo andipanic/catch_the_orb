@@ -93,17 +93,15 @@ var hud = new HUD('hud')
 var hud2 = new HUD('hud2')
 hud.title = "Catch the Orb!"
 hud2.title = "Catch the Orb!"
-hud2.background = player2.color
-hud.background = player1.color
 function hudloop(){
   orb1 = d[player1.floor].orb
-  hud.background = player1.color
+  hud.background = player1.colors[0]
   hud.clear()
   hud.message(player1.name, 20)
   if(player1.isAlive()){
     hud.message('Life: ' + player1.life + ', Kills: ' + player1.kills + ", Orb: " + orb1.status, 42)
   }else{
-    hud.message('You have died on floor ' + (player1.floor + 1) + ' with ' + player1.kills + ' kills.', 42)
+    hud.message('You have died on floor ' + (player1.floor) + ' with ' + player1.kills + ' kills.', 42)
   }
 
   if(orb1.wasHit){
@@ -115,7 +113,7 @@ function hudloop(){
   hud.message(player1.status, 64)
 
   orb2 = d[player2.floor].orb
-  hud2.background = player2.color
+  hud2.background = player2.colors[0]
   hud2.clear()
   hud2.message(player2.name, 20)
   if(player2.isAlive()){

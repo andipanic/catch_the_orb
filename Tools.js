@@ -19,4 +19,15 @@ var Tools = {
   choose: function(items) {
     return items[Math.floor(Math.random() * items.length)]
   },
+  drawSprite: function(ent){
+    var pixSize = ent.size / ent.sprite[0].length
+    for(var i = 0; i < ent.sprite.length; i+=1){
+      for(var j = 0; j < ent.sprite[i].length; j+=1){
+        if(ent.sprite[i][j]){
+          c.fillStyle = ent.colors[ent.sprite[i][j] - 1]
+          c.fillRect(ent.x + (j * pixSize), ent.y + (i * pixSize), pixSize, pixSize)
+        }
+      }
+    }
+  },
 }

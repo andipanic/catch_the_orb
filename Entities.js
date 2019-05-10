@@ -4,6 +4,7 @@ function Entity(x, y, size, color) {
   this.y = y || 100
   this.size = size || 16
   this.color = color || "red"
+  this.colors = [Tools.getRandColor()]
   this.viewx = this.x - this.size
   this.viewy = this.y - this.size
   this.views = this.size * 2
@@ -38,7 +39,7 @@ Entity.prototype.dead = function(n=0) {
 }
 
 Entity.prototype.draw = function () {
-  c.fillStyle = this.color
+  c.fillStyle = this.colors[0]
   c.fillRect(this.x, this.y, this.size, this.size)
   if(this.life > 0){
     c.fillStyle = 'green'
@@ -52,9 +53,9 @@ Entity.prototype.draw = function () {
 }
 
 Entity.prototype.hit = function() {
-  if(this.color != this.hitColor){
-    this.lastColor = this.color
-    this.color = this.hitColor
+  if(this.colors[0] != this.hitColor){
+    this.lastColor = this.colors[0]
+    this.colors[0] = this.hitColor
   }
 
   this.wasHit = true
@@ -138,7 +139,6 @@ ElevatorOrb.prototype.reset = function(){
   this.particles = []
   for (var i = this.x; i < this.x + this.size; i += this.particle_size) {
     for (var j = this.y; j < this.y + this.size; j += this.particle_size) {
-      console.log('hit')
       this.particles.push(new Particle(i, j, this.particle_size, this.particle_color, this.solid));
     }
   }
@@ -201,6 +201,7 @@ function Player(name) {
   this.vx = 4
   this.vy = 4
   this.color = "red"
+  this.colors = [Tools.getRandColor(), 'rgba(255, 224, 189, 1)']
   this.floor = 0
   this.name = name
   this.life = 16 
@@ -208,10 +209,23 @@ function Player(name) {
   this.hitColor = Tools.getRandColor()
   this.regen = 12
   this.maxLife = 16
-}
+  this.sprite = [[0, 0, 1, 1, 1, 1, 0, 0],
+                 [0, 0, 1, 2, 2, 1, 0, 0],
+                 [0, 0, 1, 2, 2, 1, 0, 0],
+                 [2, 1, 1, 1, 1, 1, 1, 2],
+                 [0, 0, 1, 1, 1, 1, 0, 0],
+                 [0, 0, 1, 0, 0, 1, 0, 0],
+                 [0, 0, 1, 0, 0, 1, 0, 0],
+                 [0, 0, 2, 0, 0, 2, 0, 0]]
+ }
 
 Player.prototype = Object.create(Entity.prototype)
 Player.prototype.constructor = Player
+
+Player.prototype.draw = function() {
+  Tools.drawSprite(this)
+};
+
 
 Player.prototype.update = function() {
   if(this.isAlive()){
@@ -250,7 +264,7 @@ Player.prototype.update = function() {
       this.y = 0
     }
     if(this.wasHit && new Date().getTime() - this.lastHit > 200){
-      this.color = this.lastColor
+      this.colors[0] = this.lastColor
       this.wasHit = false
     }
   }
