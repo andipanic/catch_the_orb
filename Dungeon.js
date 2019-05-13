@@ -4,12 +4,13 @@ function Level(x, id) {
   this.size = Math.ceil(canvas.width / x)
   this.lvl = []
   this.id = id
+  this.npc = []
 }
 
 Level.prototype.generate = function(){
   for (var x = 0; x < canvas.width; x += this.size) {
     for (var y = 0; y < canvas.height; y += this.size) {
-      this.lvl.push(new ExplodingTile(x, y, this.size, Tools.getRandColor(), false))
+      this.lvl.push(new Tile(x, y, this.size, Tools.getRandColor(), false))
     }
   }
 }
@@ -23,7 +24,7 @@ Level.prototype.draw = function(){
 // OrbLevel
 function OrbLevel(x, id) {
   Level.call(this, x, id)
-  this.orb = new ElevatorOrb(Tools.r(canvas.width), Tools.r(canvas.height), Tools.r(16) + 16, Tools.getRandColor(), Tools.r(4) + 1)
+  this.npc.push(new ElevatorOrb(Tools.r(canvas.width), Tools.r(canvas.height), Tools.r(16) + 16, Tools.getRandColor(), Tools.r(4) + 1, viewBox=true))
   this.players = []
   this.complete = false
 }
@@ -49,10 +50,12 @@ OrbLevel.prototype.checkPlayers = function(){
 
 OrbLevel.prototype.draw = function(){
   this.lvl.forEach(tile=>tile.draw())
-  this.orb.draw()
-  if(this.orb.death){
-    this.orb.drawParticles()
-  }
+  this.npc.forEach(npc => {
+    if(!npc.dead(npc.decay)){
+      npc.draw()
+    }
+  })
+
   this.players.forEach(player => {
     if(!player.dead(player.decay)){
       player.draw()
@@ -68,52 +71,45 @@ OrbLevel.prototype.draw = function(){
 OrbLevel.prototype.update = function(){
   if(!this.lvl.length){
     this.generate()
-    this.orb.dead = function(){} 
     this.startTime = new Date().getTime()
   }
   if(this.hasPlayers()){
     this.players.forEach(function(player){
-      if(this.orb.isAlive() && Tools.intersectRect(player, this.orb) && !player.wasHit){
-        // Combat
-        var h = Tools.choose([this.orb, player])
-        h.lastHit = new Date().getTime()
-        h.hit()
-        h.life -= 1
-        if(h.life == 0 && h == this.orb){
-          player.kills += 1
-
-          player.floorTime = new Date().getTime()
-          this.clearTime = (new Date().getTime() - this.startTime)/1000
-          this.complete = true
-          this.completedBy = player.name
-        }else if(player.life == 0){
-          this.orb.kills += 1
-          this.orb.status = 'Attacking'
-        }
-        // End Combat
-      }else if(this.orb.death && Tools.intersectRect(player, this.orb)){
-        this.orb.status = 'Dead'
-        this.orb.triggered = true
-
-        if(new Date().getTime() - player.floorTime > 200){ 
-          if(player.floor >= this.x - 1){
-            player.floor = 0
+      this.npc.forEach(function(npc){
+        if(npc.isAlive() && Tools.intersectRect(player, npc) && !player.wasHit){
+          var h = Tools.choose([player, npc])
+          h.lastHit = new Date().getTime()
+          h.hit()
+          if(npc instanceof LifeOrb){
+            player.addLife()
+            h.life -= 1
           }else{
-            player.floor += 1 
-            if(player.life < player.regen){
-              player.life += 1
-            }
+            h.life -= 1
           }
-          player.floorTime = new Date().getTime()
-          this.checkPlayers()
+          if(h.life == 0 && h == npc){
+            player.kills += 1
+
+            player.floorTime = new Date().getTime()
+            this.clearTime = (new Date().getTime() - this.startTime)/1000
+            this.complete = true
+            this.completedBy = player.name
+          }else if(player.life == 0){
+            npc.kills += 1
+            npc.status = 'Attacking'
+          }
+        }else if(npc.death && Tools.intersectRect(player, npc)){
+          npc.status = 'Dead'
+          npc.triggered = true
+          npc.trigger(player, this)
         }
-      }
+
+      }, this)
       if(this.complete && !player.floorTime){
         player.floorTime = new Date().getTime()
       }
     }, this)
+    this.npc.forEach(npc => npc.update())
   }
-  this.orb.update()
 }
 // End OrbLevel
 
